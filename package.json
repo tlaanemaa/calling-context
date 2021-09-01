@@ -2,11 +2,18 @@
   "name": "calling-context",
   "version": "0.0.0",
   "description": "A tiny library to pass context down the call stack in a type-safe manner",
-  "main": "dist/main",
+  "main": "dist/main.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
