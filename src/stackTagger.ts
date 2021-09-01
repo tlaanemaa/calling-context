@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
-type StackTagger<F extends AnyFunction = AnyFunction> = (fn: F) => F;
+type StackTagger = <F extends AnyFunction>(fn: F) => F;
 
 interface TaggerScope {
   readonly createTagger: () => StackTagger;
