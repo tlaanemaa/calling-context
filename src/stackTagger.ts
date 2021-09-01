@@ -6,7 +6,7 @@ type AnyFunction = (...args: any[]) => any;
 type StackTagger<F extends AnyFunction = AnyFunction> = (fn: F) => F;
 
 interface TaggerScope {
-  readonly getTagger: () => StackTagger;
+  readonly createTagger: () => StackTagger;
   readonly getTag: (stackTrace: string) => string | null;
 }
 
@@ -26,7 +26,7 @@ let scopeCounter = 0;
 /**
  * Create a new tagger scope
  */
-export const getTaggerScope = (): TaggerScope => {
+export const createTaggerScope = (): TaggerScope => {
   scopeCounter += 1;
   const scopeId = scopeCounter.toString(32);
 
@@ -37,9 +37,9 @@ export const getTaggerScope = (): TaggerScope => {
   let callCounter = 0;
 
   /**
-   * Create a new stack tagger within the `getTagger`'s scope
+   * Create a new stack tagger within the scope
    */
-  const getTagger = () => {
+  const createTagger = () => {
     callCounter += 1;
     const callId = callCounter.toString(32);
     const callKey = [BASE_KEY, scopeId, callId].join("_");
@@ -68,7 +68,8 @@ export const getTaggerScope = (): TaggerScope => {
   };
 
   /**
-   * We'll be using this regex to resolve stack ID from a call stack
+   * We'll be using this regex to resolve stack ID from a call stack.
+   * It is important that this matches the function name created in `stackTagger`
    */
   const matcherRegex = new RegExp(
     `___stack_tag_(${BASE_KEY}_${scopeId}_[a-z0-9]+)___`
@@ -83,7 +84,7 @@ export const getTaggerScope = (): TaggerScope => {
   };
 
   return {
-    getTagger,
+    createTagger,
     getTag,
   } as const;
 };
