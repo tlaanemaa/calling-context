@@ -10,6 +10,8 @@ interface TaggerScope {
   readonly getTag: (stackTrace: string) => string | null;
 }
 
+type CreateTaggerScope = () => TaggerScope;
+
 /**
  * We use this hard-coded UUIDv4 (dashes removed) to reduce the likely hood of collisions with other
  * entries in the stack trace.
@@ -26,7 +28,7 @@ let scopeCounter = 0;
 /**
  * Create a new tagger scope
  */
-export const createTaggerScope = (): TaggerScope => {
+export const createTaggerScope: CreateTaggerScope = () => {
   scopeCounter += 1;
   const scopeId = scopeCounter.toString(32);
 
