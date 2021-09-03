@@ -16,6 +16,7 @@
     "start": "node .",
     "test": "jest ./src",
     "lint": "eslint ./src",
+    "type-check": "tsc --noEmit",
     "prepare": "npm run build"
   },
   "repository": {
