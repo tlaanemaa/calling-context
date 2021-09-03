@@ -3,12 +3,16 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
+
 type StackTagger = <F extends AnyFunction>(fn: F) => F;
+
 type GetTag = (stackTrace: string) => string | null;
+
 type CreateTagger = () => {
   stackTagger: StackTagger;
   tag: string;
 };
+
 type CreateTaggerScope = () => {
   readonly createTagger: CreateTagger;
   readonly getTag: GetTag;
