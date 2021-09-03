@@ -4,13 +4,15 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
 type StackTagger = <F extends AnyFunction>(fn: F) => F;
-
-interface TaggerScope {
-  readonly createTagger: () => StackTagger;
-  readonly getTag: (stackTrace: string) => string | null;
-}
-
-type CreateTaggerScope = () => TaggerScope;
+type GetTag = (stackTrace: string) => string | null;
+type CreateTagger = () => {
+  stackTagger: StackTagger;
+  tag: string;
+};
+type CreateTaggerScope = () => {
+  readonly createTagger: CreateTagger;
+  readonly getTag: GetTag;
+};
 
 /**
  * We use this hard-coded UUIDv4 (dashes removed) to reduce the likely hood of collisions with other
@@ -44,7 +46,7 @@ export const createTaggerScope: CreateTaggerScope = () => {
   const createTagger = () => {
     callCounter += 1;
     const callId = callCounter.toString(32);
-    const callKey = [BASE_KEY, scopeId, callId].join("_");
+    const tag = [BASE_KEY, scopeId, callId].join("_");
 
     /**
      * Dont panic!
@@ -63,10 +65,10 @@ export const createTaggerScope: CreateTaggerScope = () => {
      */
     const stackTagger = new Function(
       "action",
-      `return function ___stack_tag_${callKey}___(...args) { return action(...args); };`
-    );
+      `return function ___stack_tag_${tag}___(...args) { return action(...args); };`
+    ) as StackTagger;
 
-    return stackTagger as StackTagger;
+    return { stackTagger, tag };
   };
 
   /**
@@ -82,7 +84,7 @@ export const createTaggerScope: CreateTaggerScope = () => {
    */
   const getTag = (stackTrace: string) => {
     const match = stackTrace.match(matcherRegex);
-    return match ? match[2] : null;
+    return match ? match[1] : null;
   };
 
   return {
